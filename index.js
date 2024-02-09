@@ -114,13 +114,30 @@ app.post("/createcategory", (req, res) => {
   }
 })
 app.get("/getProductByLInkId/:linkid", (req, res) => {
-    con.query(`SELECT * FROM products WHERE linkId like "${req.params.linkid}"`, function (err, result, fields) {
+    con.query(`SELECT * FROM products INNER JOIN attributes ON attributes.id = products.attrId WHERE linkId like "${req.params.linkid}"`, function (err, result, fields) {
         if (err) {
             res.sendStatus(500); 
             return console.log(err);
         }
+        if(result.length == 0){
+          res.sendStatus(404);
+          return;
+        }
         res.json(result); 
     });
+});
+app.get("/getProductById/:id", (req, res) => {
+  con.query(`SELECT * FROM products INNER JOIN attributes ON attributes.id = products.attrId WHERE products.id like ${req.params.id}`, function (err, result, fields) {
+      if (err) {
+          res.sendStatus(500); 
+          return console.log(err);
+      }
+      if(result.length == 0){
+        res.sendStatus(404);
+        return;
+      }
+      res.json(result); 
+  });
 });
 app.get("/search/:q", (req, res) => {
   con.query(`SELECT pName, id, linkId FROM products WHERE pName like "%${req.params.q}%" OR pDescr like "%${req.params.q}%"`, function (err, result, fields) {
@@ -141,7 +158,7 @@ app.get("/getallcetegory", (req, res) => {
   });
 });
 app.get("/getProductsByCategory/:id", (req, res) => {
-  con.query(`SELECT *, categories.name AS "categoryName" FROM products INNER JOIN categories ON products.categoryId = categories.id WHERE products.categoryId like ${req.params.id}`, function (err, result, fields) {
+  con.query(`SELECT *, categories.name AS "categoryName" FROM products INNER JOIN categories ON products.categoryId = categories.id INNER JOIN attributes ON attributes.id = products.attrId WHERE products.categoryId like ${req.params.id}`, function (err, result, fields) {
       if (err) {
           res.sendStatus(500); 
           return console.log(err);
