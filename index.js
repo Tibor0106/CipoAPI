@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require('path');
 const bodyParser = require("body-parser");
 var cors = require("cors");
 app.use(cors());
@@ -19,7 +20,7 @@ con.connect(function (err) {
   console.log("Connected!");
 });
 
-app.use(express.static("public"));
+app.use(express.static("web"));
 const port = 3001;
 app.listen(port, () => console.log(`Server running on port ${port}!`));
 function CreateLinkId(item) {
@@ -33,43 +34,7 @@ function CreateLinkId(item) {
 
 function ekezetCheck(item) {
   let enabledCharacters = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    " ",
+    "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9"," ",
   ];
 
   let chHU = ["á", "é", "í", "ó", "ö", "ő", "ú", "ü", "ű"];
@@ -84,6 +49,14 @@ function ekezetCheck(item) {
 
   return chEN[o];
 }
+app.get("/", (req, res) => {
+    const filePath = path.resolve("web", 'index.html');
+    res.sendFile(filePath); 
+})
+app.get("/controlpanel", (req, res) => {
+  const filePath = path.resolve("web/controlpanel", 'index.html');
+  res.sendFile(filePath); 
+})
 app.post("/uploadproduct", (req, res) => {
   try {
     const { banner, pName, pDescr, discountprice, price, categoryId, attrs } =
@@ -166,4 +139,19 @@ app.get("/getProductsByCategory/:id", (req, res) => {
       res.json(result); 
   });
 });
+
+const adminLoginDatas = [{username: "valami", password: "valami"}]; // több fiók érdekében
+app.post("/adminlogin", (req, res) => {
+  try{
+    const {username, password} = req.body;
+    const user = adminLoginDatas.filter(i => i.username == username && i.password == password);
+    if(user.length == 0){
+      res.sendStatus(400);
+      return;     
+    }
+    res.send(user);
+  }catch(err){
+    res.sendStatus(204); //No content
+  }
+})
 
