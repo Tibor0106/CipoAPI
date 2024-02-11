@@ -93,7 +93,7 @@ app.post("/createcategory", (req, res) => {
   }
 })
 app.get("/getNews", (req, res) => {
-  con.query(`SELECT * FROM news INNER JOIN products ON news.productId = products.id INNER JOIN attributes ON products.attrId = attributes.id ORDER BY news.upload_at DESC LIMIT 3`, function (err, result, fields) {
+  con.query(`SELECT * FROM products ORDER BY upload_date DESC LIMIT 3`, function (err, result, fields) {
       if (err) {
           res.sendStatus(500); 
           return console.log(err);
@@ -105,21 +105,7 @@ app.get("/getNews", (req, res) => {
       res.json(result); 
   });
 });
-app.get("/addtoNew/:id", (req, res) => {
- 
-  try {
-  
-    var sql = `INSERT INTO news (productId, upload_at) VALUES ("${req.params.id}", '${new Date().toISOString().split('T').join(' ').split('.')[0]}')`;
-    con.query(sql, function (err, result) {
-      if (err) {
-        throw err;
-      }
-      res.send(true);
-    });
-  } catch (Err) {
-    res.sendStatus(400);
-  }
-});
+
 app.get("/getProductByLInkId/:linkid", (req, res) => {
     con.query(`SELECT * FROM products INNER JOIN attributes ON attributes.id = products.attrId WHERE linkId like "${req.params.linkid}"`, function (err, result, fields) {
         if (err) {
