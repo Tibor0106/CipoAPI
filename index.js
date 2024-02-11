@@ -53,6 +53,12 @@ app.get("/", (req, res) => {
     const filePath = path.resolve("web", 'index.html');
     res.sendFile(filePath); 
 })
+
+app.get("/rendeles", (req, res) => {
+  const filePath = path.resolve("web", 'rendeles.html');
+  res.sendFile(filePath); 
+})
+
 app.get("/controlpanel", (req, res) => {
   const filePath = path.resolve("web/controlpanel", 'index.html');
   res.sendFile(filePath); 
@@ -86,6 +92,34 @@ app.post("/createcategory", (req, res) => {
     res.sendStatus(400);
   }
 })
+app.get("/getNews", (req, res) => {
+  con.query(`SELECT * FROM news INNER JOIN products ON news.productId = products.id INNER JOIN attributes ON products.attrId = attributes.id ORDER BY news.upload_at DESC LIMIT 3`, function (err, result, fields) {
+      if (err) {
+          res.sendStatus(500); 
+          return console.log(err);
+      }
+      if(result.length == 0){
+        res.sendStatus(404);
+        return;
+      }
+      res.json(result); 
+  });
+});
+app.get("/addtoNew/:id", (req, res) => {
+ 
+  try {
+  
+    var sql = `INSERT INTO news (productId, upload_at) VALUES ("${req.params.id}", '${new Date().toISOString().split('T').join(' ').split('.')[0]}')`;
+    con.query(sql, function (err, result) {
+      if (err) {
+        throw err;
+      }
+      res.send(true);
+    });
+  } catch (Err) {
+    res.sendStatus(400);
+  }
+});
 app.get("/getProductByLInkId/:linkid", (req, res) => {
     con.query(`SELECT * FROM products INNER JOIN attributes ON attributes.id = products.attrId WHERE linkId like "${req.params.linkid}"`, function (err, result, fields) {
         if (err) {
