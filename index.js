@@ -54,8 +54,8 @@ app.get("/", (req, res) => {
     res.sendFile(filePath); 
 })
 
-app.get("/rendeles", (req, res) => {
-  const filePath = path.resolve("web", 'rendeles.html');
+app.get("/termekek", (req, res) => {
+  const filePath = path.resolve("web", 'termek/index.html');
   res.sendFile(filePath); 
 })
 
